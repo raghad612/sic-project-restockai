@@ -1,6 +1,21 @@
-.ipynb_checkpoints/
+# data stays in Google Drive, never in Git
+data/*
+!data/.gitkeep
+*.csv
+*.parquet
+*.zip
+
+# saved models and secrets
+*.pkl
+*.joblib
+.env
+kaggle.json
+
+# python and notebooks
 __pycache__/
 *.pyc
+.ipynb_checkpoints/
 .venv/
-.env
+
+# os
 .DS_Store
