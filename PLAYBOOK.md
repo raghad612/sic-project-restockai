@@ -72,6 +72,7 @@ All dates are 2026. Treat every date after Nov 24 as provisional until the offic
 Rules:
 - If a milestone slips by more than 2 days, tell Raghad immediately. We decide together what to cut.
 - Nothing new is added after the Dec 8 feature freeze unless something else is cut.
+- The Action Plan (first draft due Dec 1, final due Dec 5) is a course deliverable without a task card yet. Raghad creates its Issue after the Nov 25 intro session, when the format is known.
 
 ---
 
@@ -203,6 +204,7 @@ Proposed metrics (to be confirmed in T9): MAE (average absolute error), WAPE (to
   3. Add rolling means over past windows.
   4. Add calendar features (day of week, month), plus promotion and holiday flags.
   5. Save the feature table, versioned, in `restockai-work/processed`, and log it in `DATA.md`.
+  6. The first rows of each series have empty lags because there is no history yet. Drop them from training.
 - **Pitfall:** Leakage. A rolling mean must skip today's row, otherwise today's sales leak into the feature.
 - **Done when:** `src/features.py` builds lags, rolling means and calendar features using only past data; the feature file is versioned and in `DATA.md`.
 - **If stuck:** Use this pattern (column names depend on the chosen dataset):
@@ -220,7 +222,7 @@ df["roll7"] = (
 - **Why:** Every later model must beat this number.
 - **Steps:**
   1. Write the metric functions in `src/metrics.py`.
-  2. Choose fixed cutoff dates for train and test (never random).
+  2. Choose fixed cutoff dates for train and test (never random). Keep the last 3 months of data as the test period, because T12 uses them for the walk-forward backtest.
   3. Build the naive baseline: tomorrow's forecast = sales 7 days earlier.
   4. Save the real error number and how it was computed in `notes/results.md`.
   5. Do the phase-close steps (section 7).
@@ -310,7 +312,7 @@ CONTRIBUTING.md is the rule book. If this section ever differs from it, CONTRIBU
 
 ### Rules
 - `main` is protected: no direct pushes. Every change, including docs, goes through a branch and a PR.
-- Branch name: `firstname/t03-short-name`, all lowercase (example: `zahraa/t05-eda-sales`).
+- Branch name: `firstname/T5-short-name` (example: `zahraa/T5-eda-sales`). Your first name in lowercase, then the task number as written in the Issue title.
 - One short branch and one PR per task.
 - Every PR needs one approval from someone who is not the author. Raghad reviews unless she says otherwise.
 - The PR description says `Closes #N` so the Issue closes when the PR is merged.
@@ -332,7 +334,7 @@ Issue created -> To do -> In progress -> PR opened -> Review -> Merged -> Done
 2. Click Add file, then Create new file.
 3. Name it `team/yourfirstname.md` and write a few lines.
 4. Click Commit changes. Choose "Create a new branch for this commit and start a pull request".
-5. In the branch-name box, replace the default name with `yourfirstname/t02-practice`.
+5. In the branch-name box, replace the default name with `yourfirstname/T2-practice`.
 6. Click Propose changes, then in the description write `Closes #N` (your Issue number) and click Create pull request.
 7. Ask one teammate to review. After approval, click Merge pull request, then Delete branch.
 
@@ -341,11 +343,11 @@ Issue created -> To do -> In progress -> PR opened -> Review -> Merged -> Done
 ```bash
 git clone https://github.com/raghad612/sic-project-restockai.git
 cd sic-project-restockai
-git checkout -b yourfirstname/t02-practice
+git checkout -b yourfirstname/T2-practice
 # create team/yourfirstname.md
 git add team/yourfirstname.md
 git commit -m "Add team/yourfirstname.md"
-git push -u origin yourfirstname/t02-practice
+git push -u origin yourfirstname/T2-practice
 # then open the pull request on github.com
 git checkout main && git pull
 ```
@@ -420,6 +422,7 @@ Later, only after the official guidelines arrive and the ML/DL baseline works:
 - Explanation layer: templates first, then an optional small LLM, with a check that every number matches the model output.
 - FastAPI and Streamlit app (Tomorrow's Orders, What-If).
 - Report and slides.
+- If time runs short, the LLM explanation upgrade is cut first.
 
 Out of scope unless everything else works: Slack alerts, slow-mover detection, an ask-your-data chatbot, real-time ingestion.
 
