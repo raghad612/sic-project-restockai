@@ -78,6 +78,16 @@ Rules: Competition rules must be accepted. Historical rules restrict use of comp
 
 ## 3. Recommendation
 
+### Tie-breaker comparison: Favorita vs M5
+
+Both Corporación Favorita and M5 Forecasting satisfy the mandatory dataset requirements. Applying the tie-breakers in order:
+
+1. **Fewer files to join:** Favorita requires `train.csv` and `items.csv` (2 files) to obtain daily sales, product families, perishability, and promotion information. M5 requires a sales file, `calendar.csv`, and `sell_prices.csv` (3 files) to obtain daily sales with actual dates and prices. Favorita has the advantage because it requires fewer files and less preprocessing.
+2. **Perishable flag:** Favorita provides an explicit `perishable` column in `items.csv`, while M5 does not provide an equivalent flag. Favorita has the advantage.
+3. **Explicit promotion column:** Favorita includes `onpromotion` directly in `train.csv`. M5 provides selling prices but no equivalent explicit promotion flag. Favorita has the advantage.
+
+**Final decision:** Select Corporación Favorita as the primary dataset and M5 Forecasting as the runner-up. Favorita is better suited to ReStock AI because it requires fewer joins, identifies perishable products, and provides explicit promotion information.
+
 **Recommended dataset: Corporación Favorita Grocery Sales Forecasting.**
 
 Three reasons:
