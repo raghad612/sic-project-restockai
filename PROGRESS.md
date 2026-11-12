@@ -2,10 +2,15 @@
 
 Newest first. Each entry: done, decisions, open issues.
 
+## 2026-11-12
+Done: T3 merged. Favorita locked, M5 runner-up. Raw data downloaded to restockai-raw. PLAYBOOK T4 steps 1-2 updated. Ali.md and nour.md moved into team/.
+Decisions: every teammate accepts the Kaggle competition rules on their own account; data stays in the private Drive, never in GitHub. Store, item and row counts are not confirmed yet and will be confirmed in T4. The report says the method transfers, not the numbers.
+Open: T4 (subsample) goes to Ali and Leen; unzip method still to verify.
+
 ## 2026-11-10
 Done: T3 dataset comparison completed. Compared Corporación Favorita, Rossmann, and M5 Forecasting against the project requirements. Created notes/dataset-check.md, committed the changes, and pushed branch nour/T3-dataset-check.
 Decisions: Corporación Favorita selected as the recommended dataset; M5 Forecasting selected as the runner-up. Rossmann does not meet the product-level sales requirement.
-Open: T3 PR reviewed and merged by Raghad; Raghad downloads Favorita into restockai-raw; T4 subsample to assign.
+Open: resolved, see 2026-11-12.
 
 ## 2026-11-08
 Done: T1 complete. Repo renamed to sic-project-restockai; README, .gitignore, folder skeleton, working rules; board with To do, In progress, Review, Done; main protected with one approval. Leen and Nour joined and merged their practice PRs (#6, #7).
