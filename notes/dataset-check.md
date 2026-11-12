@@ -12,7 +12,7 @@
 | Holidays/events | PASS – holidays_events.csv | PASS – StateHoliday, SchoolHoliday | PASS – calendar.csv |
 | Country | Ecuador | Germany | USA |
 | Number of files | 8 | 4 | 5 |
-| Dataset size | Approximately 5.83 GB total (Kaggle notebook input listing) | 39.85 MB | 450.47 MB |
+| Dataset size | 479.88 MB compressed (8 .7z files, Data tab); about 5.83 GB after extraction (from a Kaggle notebook listing, to be confirmed in T4) | 39.85 MB | 450.47 MB |
 | Rows / observations | Approximately 125 million training rows | Approximately 1 million training rows | 30,490 item-store series, with daily sales in separate columns |
 | Free Colab after subsampling | PASS – subsampling required | PASS | PASS – subsampling recommended |
 | Kaggle rules | Subject to competition rules; accept before downloading | Subject to competition rules; accept before downloading | Subject to competition rules; accept before downloading |
@@ -36,10 +36,11 @@ Link: https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting/dat
 - Main files: train.csv, test.csv, stores.csv, items.csv, transactions.csv, oil.csv, holidays_events.csv, sample_submission.csv.
 - Training data: approximately 125 million rows.
 - Dataset is large and requires subsampling for free Colab.
+- Note: the store count, item and family counts, row count and date range above were not stated on the Kaggle Data tab. They are to be confirmed in T4.
 
 Important limitation: The training data does not contain rows for items with zero recorded sales. Missing records should not automatically be treated as proof of zero demand or out-of-stock status.
 
-Rules: Kaggle competition rules must be accepted. The rules permit academic research and education subject to their conditions. Dataset redistribution is restricted.
+Rules: Kaggle competition rules must be accepted. Rule 7A allows use for academic research, education and non-commercial purposes after acceptance. Rule 7B forbids making the data available to anyone who has not accepted the rules. So every teammate must accept the rules with their own Kaggle account, and the data stays in the private team Drive, never in GitHub.
 
 ### Rossmann Store Sales
 
@@ -82,11 +83,11 @@ Rules: Competition rules must be accepted. Historical rules restrict use of comp
 
 Both Corporación Favorita and M5 Forecasting satisfy the mandatory dataset requirements. Applying the tie-breakers in order:
 
-1. **Fewer files to join:** Favorita requires `train.csv` and `items.csv` (2 files) to obtain daily sales, product families, perishability, and promotion information. M5 requires a sales file, `calendar.csv`, and `sell_prices.csv` (3 files) to obtain daily sales with actual dates and prices. Favorita has the advantage because it requires fewer files and less preprocessing.
+1. **Fewer files to join:** Favorita needs `train.csv`, `items.csv` and `holidays_events.csv` (3 files, because we also want holiday features). M5 needs the sales file, `calendar.csv` and `sell_prices.csv` (3 files). About even, no clear advantage.
 2. **Perishable flag:** Favorita provides an explicit `perishable` column in `items.csv`, while M5 does not provide an equivalent flag. Favorita has the advantage.
 3. **Explicit promotion column:** Favorita includes `onpromotion` directly in `train.csv`. M5 provides selling prices but no equivalent explicit promotion flag. Favorita has the advantage.
 
-**Final decision:** Select Corporación Favorita as the primary dataset and M5 Forecasting as the runner-up. Favorita is better suited to ReStock AI because it requires fewer joins, identifies perishable products, and provides explicit promotion information.
+**Final decision:** Select Corporación Favorita as the primary dataset and M5 Forecasting as the runner-up. Favorita is better suited to ReStock AI because it has a perishable flag and an explicit promotion column.
 
 **Recommended dataset: Corporación Favorita Grocery Sales Forecasting.**
 
