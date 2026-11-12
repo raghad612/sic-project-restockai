@@ -152,8 +152,8 @@ Proposed metrics (to be confirmed in T9): MAE (average absolute error), WAPE (to
 - **Goal:** Make a small version of the locked dataset that runs on free Colab.
 - **Why:** The full data may crash Colab and slows every experiment.
 - **Steps:**
-  1. Before you start: Raghad downloads the locked dataset from Kaggle into `restockai-raw` (only Raghad writes there) and tells the pair.
-  2. Write a script in `src/` (for example `src/subsample.py`) that keeps about 10-15 stores and about 2 years of dates.
+  1. Before you start: Raghad has already downloaded the locked dataset (Corporación Favorita) into `restockai-raw`. Only Raghad writes there. You only read from it.
+  2. Write a script in `src/` (for example `src/subsample.py`) that reads the big train file in chunks (a few hundred thousand rows at a time, so Colab does not run out of memory) and keeps about 10-15 stores, about 200-300 items (a mix of product families, at least one third perishable), and the latest 2 years of dates.
   3. Save the result in `restockai-work/interim` with a versioned name (for example `sales_sample_v1.parquet`). Use the paths in `src/config.py`.
   4. Add one row to `DATA.md`.
 - **Done when:** The subsample is saved in `restockai-work/interim` with a versioned name, created by a script in `src/`, and logged in `DATA.md`.
@@ -488,3 +488,4 @@ Every PR needs one approval from someone who is not the author. Raghad reviews u
 | Version | Date | What changed |
 |---|---|---|
 | v1 | Nov 10, 2026 | First release |
+| v1.1 | Nov 12, 2026 | T4 step 1 and 2 updated after the raw data download |
