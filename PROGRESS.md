@@ -2,6 +2,11 @@
 
 Newest first. Each entry: done, decisions, open issues.
 
+## 2026-11-13
+Done: Raw zip checked: 8 .csv.7z files, train is 474 MB. Unzip method (zipfile + py7zr, Colab local disk) tested and works. Full train.csv measured: 125,497,040 rows, 2013-01-01 to 2017-08-15, 54 stores, 4,036 items, 5.0 GB extracted, 7,795 negative unit_sales rows, 17.3% empty onpromotion. Ali and Leen accepted the Kaggle rules. T4 Issue and teammate message written.
+Decisions: T4 window 2015-08-01 to 2017-07-31; about 12 stores; about 250 items chosen on the training part only (up to 2017-04-30); Ali drives with Leen as associate; extracted data stays on Colab local disk, never in Drive or GitHub.
+Open: T4 in progress (Ali and Leen); notes/dataset-check.md still has unconfirmed lines (Leen updates them in T4); Phase 1 gate (Nov 15) will slip, new date to decide; T5/T6 pairs not decided; official guidelines not received; pitch date not confirmed.
+
 ## 2026-11-12
 Done: T3 merged. Favorita locked, M5 runner-up. Raw data downloaded to restockai-raw. PLAYBOOK T4 steps 1-2 updated. Ali.md and nour.md moved into team/.
 Decisions: every teammate accepts the Kaggle competition rules on their own account; data stays in the private Drive, never in GitHub. Store, item and row counts are not confirmed yet and will be confirmed in T4. The report says the method transfers, not the numbers.
