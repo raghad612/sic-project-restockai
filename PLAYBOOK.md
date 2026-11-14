@@ -60,10 +60,10 @@ All dates are 2026. Treat every date after Nov 24 as provisional until the offic
 
 | Phase / event | Dates | What happens | Gate |
 |---|---|---|---|
-| Phase 1: Data and baseline | Nov 6 - Nov 15 | Lock dataset, subsample, EDA, cleaning, features, time split, naive baseline | Nov 15: the naive baseline runs end to end |
-| Phase 2: ML | Nov 16 - Nov 24 | LightGBM, then quantile forecasts, then walk-forward backtest | Nov 24: ML beats the baseline on the time split, or we know why not |
+| Phase 1: Data and baseline | Nov 6 - Nov 22 | Lock dataset, subsample, EDA, cleaning, features, time split, naive baseline | Nov 22: the naive baseline runs end to end |
+| Phase 2: ML | Nov 23 - Nov 28 | LightGBM, then quantile forecasts, then walk-forward backtest | Nov 28: ML beats the baseline on the time split, or we know why not |
 | Capstone intro session | Nov 25 | Official introduction | None |
-| Phase 3: DL and comparison | Nov 25 - Dec 1 | One simple DL model with a fixed time budget, honest ML vs DL comparison | Dec 1: first Action Plan draft due |
+| Phase 3: DL and comparison | Nov 25 - Dec 1 | One simple DL model with a fixed time budget, starting in parallel with Phase 2 (a different pair). Honest ML vs DL comparison after the Nov 28 ML gate | Dec 1: first Action Plan draft due |
 | Mentoring session 1 | Dec 2 - Dec 4 | Feedback (exact slot to be confirmed) | Dec 5: final Action Plan due |
 | Product layer (provisional) | Dec 6 - Dec 8 | Decision layer, template explanations, minimal app. To be confirmed once the official guidelines arrive | Dec 8: feature freeze |
 | Deliverables (provisional) | Dec 9 - Dec 14 | Report, slides, README, code reference, rehearsals. Mentoring session 3 around Dec 13-15 | None |
