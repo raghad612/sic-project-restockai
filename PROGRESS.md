@@ -2,6 +2,11 @@
 
 Newest first. Each entry: done, decisions, open issues.
 
+## 2026-11-14
+Done: T4 Issue #17 is on the board for Ali and Leen. T4 paths (ZIP_PATH, LOCAL, SALES_SAMPLE, STORES_OUT, ITEMS_OUT, HOLIDAYS_OUT) added to src/config.py on main (branch raghad/config-t4, merged by Raghad with the bypass). Kaggle rules message sent to Fatima, Nour and Zahraa.
+Decisions: Phase 1 gate moved from Nov 15 to Nov 22, because T4 started on Nov 13 and T5 to T9 need about 7-8 working days after it. ML gate moved from Nov 24 to Nov 28.DL phase stays Nov 25 to Dec 1 and overlaps the ML phase (a different pair, comparison after the Nov 28 ML gate). T5, T6 and T7 run in parallel after T4 merges. Dec 1, Dec 5 and Dec 15 are unchanged. T8 and T9 stay single tasks, with no extra prep tasks.
+Open: T4 in progress. Kaggle confirmations pending from Fatima, Nour and Zahraa. T5, T6 and T7 Issues and pairs to be written when T4 merges. Official guidelines and pitch date not received.
+
 ## 2026-11-13
 Done: Raw zip checked: 8 .csv.7z files, train is 474 MB. Unzip method (zipfile + py7zr, Colab local disk) tested and works. Full train.csv measured: 125,497,040 rows, 2013-01-01 to 2017-08-15, 54 stores, 4,036 items, 5.0 GB extracted, 7,795 negative unit_sales rows, 17.3% empty onpromotion. Ali and Leen accepted the Kaggle rules. T4 Issue and teammate message written.
 Decisions: T4 window 2015-08-01 to 2017-07-31; about 12 stores; about 250 items chosen on the training part only (up to 2017-04-30); Ali drives with Leen as associate; extracted data stays on Colab local disk, never in Drive or GitHub.
