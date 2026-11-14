@@ -7,3 +7,13 @@ PROCESSED = f"{WORK}/processed"                     # features and splits
 OUTPUTS = f"{WORK}/outputs"                         # predictions and metrics
 
 SEED = 42  # fixed random seed so results can be repeated
+
+# T4 additions
+ZIP_PATH = f"{RAW}/favorita-grocery-sales-forecasting.zip"  # raw zip in Drive
+LOCAL = "/content/favorita"  # Colab local disk only: wiped on reset, never Drive or GitHub
+
+# versioned output names (one writer per file, see DATA.md)
+SALES_SAMPLE = f"{INTERIM}/sales_sample_v1.parquet"
+STORES_OUT = f"{INTERIM}/stores_v1.parquet"
+ITEMS_OUT = f"{INTERIM}/items_v1.parquet"
+HOLIDAYS_OUT = f"{INTERIM}/holidays_events_v1.parquet"
