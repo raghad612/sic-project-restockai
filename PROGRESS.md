@@ -31,3 +31,8 @@ Open: 3 teammates (invited and accepted) still need their T2 practice cards; T3 
 Done: repo renamed, README and .gitignore written, working rules and shared paths added.
 Decisions: code in GitHub, data in shared Google Drive; GitHub Issues and board for tracking.
 Open: dataset not locked yet (task T3); teammates not invited yet.
+
+## 2026-11-15
+Done: T4 sample built by src/subsample.py (Ali) and small tables by src/small_tables.py (Leen), all in restockai-work/interim, paths from src/config.py. sales_sample_v1.parquet: 1,741,225 rows, 2015-08-01 to 2017-07-31, 12 stores, 250 items, 105 perishable (42.0%), 15 families, 0.00% empty onpromotion, 55 negative unit_sales rows, 5.6 MB. stores_v1 (54 rows), items_v1 (4,100 rows), holidays_events_v1 (350 rows). First pass 189 s, whole script 317 s on free Colab. notes/dataset-check.md updated with the measured facts (Leen). DATA.md has the 4 files. PR for #17 opened, reviewer Raghad.
+Decisions (proposed in the PR, for Raghad to confirm): stores = rows in all 24 months (50 of 54 eligible; 52, 18, 22, 25 excluded), then round-robin over types A-E by training-part sales, max 2 per city (5 types, 10 cities). Week = 7-day block from 2015-08-01, 91 full weeks in the training part; "sold" = unit_sales > 0 in any chosen store. Items filled in 3 phases: best perishables to 84, missing families to 8, then best remaining to 250, max 62 per family.
+Open: T4 PR waiting for review. Notes for T5 to T8: GROCERY I, BEVERAGES and PRODUCE are at the 62 cap (186 of 250 items); ranking by unit_sales mixes counts and kg, so DAIRY has only 6 items; 20.6% of store-item-days have no row (zero-sales question for T7/T8); Apr 16-30 2016 is +19.3% units per day versus Apr 1-15 (earthquake period, kept).
