@@ -12,8 +12,8 @@
 | Holidays/events | PASS – holidays_events.csv | PASS – StateHoliday, SchoolHoliday | PASS – calendar.csv |
 | Country | Ecuador | Germany | USA |
 | Number of files | 8 | 4 | 5 |
-| Dataset size | 479.88 MB compressed (8 .7z files, Data tab); about 5.83 GB after extraction (from a Kaggle notebook listing, to be confirmed in T4) | 39.85 MB | 450.47 MB |
-| Rows / observations | Approximately 125 million training rows | Approximately 1 million training rows | 30,490 item-store series, with daily sales in separate columns |
+| Dataset size | 479.88 MB compressed (8 .7z files, Data tab); 5.0 GB after extraction (measured in T4) | 39.85 MB | 450.47 MB |
+| Rows / observations | 125,497,040 training rows (measured in T4) | Approximately 1 million training rows | 30,490 item-store series, with daily sales in separate columns |
 | Free Colab after subsampling | PASS – subsampling required | PASS | PASS – subsampling recommended |
 | Kaggle rules | Subject to competition rules; accept before downloading | Subject to competition rules; accept before downloading | Subject to competition rules; accept before downloading |
 
@@ -27,16 +27,16 @@ Link: https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting/dat
 
 - Country: Ecuador.
 - Stores: 54.
-- Products: Approximately 4,100 items and 33 families.
+- Products: 4,036 items in the training data (4,100 in items.csv) and 33 families.
 - Date range: January 1, 2013 – August 15, 2017.
 - Target: unit_sales.
 - Promotion: onpromotion.
 - Perishable information: items.csv contains perishable.
 - Holidays: holidays_events.csv.
 - Main files: train.csv, test.csv, stores.csv, items.csv, transactions.csv, oil.csv, holidays_events.csv, sample_submission.csv.
-- Training data: approximately 125 million rows.
+- Training data: 125,497,040 rows, 2013-01-01 to 2017-08-15, 5.0 GB extracted.
 - Dataset is large and requires subsampling for free Colab.
-- Note: the store count, item and family counts, row count and date range above were not stated on the Kaggle Data tab. They are to be confirmed in T4.
+- Note: the store count, item and family counts, row count, date range and extracted size above were not stated on the Kaggle Data tab. They were measured on the extracted files in T4 (train.csv by Raghad, items.csv and stores.csv by Leen).
 
 Important limitation: The training data does not contain rows for items with zero recorded sales. Missing records should not automatically be treated as proof of zero demand or out-of-stock status.
 
