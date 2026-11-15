@@ -274,6 +274,9 @@ def main(overwrite=False):
     if not os.path.exists(TRAIN_CSV):
         raise FileNotFoundError(f"{TRAIN_CSV} not found. Run the extraction cell first "
                                 "(a session reset wipes /content).")
+    out_dir = os.path.dirname(SALES_SAMPLE)
+    if not os.path.isdir(out_dir):
+        raise FileNotFoundError("restockai-work/interim not found. Is Drive mounted?")
     if os.path.exists(SALES_SAMPLE) and not overwrite:
         raise FileExistsError(f"{SALES_SAMPLE} already exists. v1 is not overwritten "
                               "silently: delete it on purpose or use --overwrite.")
@@ -298,7 +301,6 @@ def main(overwrite=False):
     sample = pass_c(chosen_stores, chosen_items)
     print(f"  pass (c) time: {time.time() - t0:.0f} s")
 
-    os.makedirs(os.path.dirname(SALES_SAMPLE), exist_ok=True)
     sample.to_parquet(SALES_SAMPLE, index=False)
     print(f"saved: {SALES_SAMPLE} ({os.path.getsize(SALES_SAMPLE) / 1e6:.1f} MB)")
 
