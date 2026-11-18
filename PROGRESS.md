@@ -2,7 +2,8 @@
 
 Newest first. Each entry: done, decisions, open issues.
 
-2026-11-18
+## 2026-11-18
+
 Done: T6 EDA of promotions and holidays merged (PR #24, Closes #22), notebooks/02_eda_promo_holidays_raghad.ipynb. Owner Raghad, reviewed by Nour. Findings: promoted share 12.83% (10.57% to 14.78% by store); average unit_sales promoted vs not promoted 41.13 vs 28.02 on the training part (correlation only); holidays touch few store-days: national 5.32%, local 0.29%, regional 0 (no regional holiday province among our 6 states). T8 encoding list (11 points) is in the notebook.
 Decisions: T6 reassigned to Raghad (Nour unavailable at the time; she later reviewed). Promotions analysed before holidays. Sales-around-holidays chart: done (Navidad and Fundacion de Quito). No regional holiday flag in v1; the Transfer row is the real celebration day; Events kept out of holiday flags; holiday flags built from date, locale and place so the method transfers to another country.
 Open: rule for no-record days (Dec 25, Jan 1; closure not verified) and the 20.6% of store-item-days with no row; deduplicate holiday flags before merging (24 matched local rows = 22 distinct store-days); T8 encoding priorities and a test of "days to/since holiday" on the time split; promoted vs not promoted gap is wider in the last 3 months (46.02 vs 25.93, training 41.13 vs 28.02), noted only, nothing tuned.
