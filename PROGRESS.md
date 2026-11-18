@@ -4,9 +4,36 @@ Newest first. Each entry: done, decisions, open issues.
 
 ## 2026-11-18
 
-Done: T6 EDA of promotions and holidays merged (PR #24, Closes #22), notebooks/02_eda_promo_holidays_raghad.ipynb. Owner Raghad, reviewed by Nour. Findings: promoted share 12.83% (10.57% to 14.78% by store); average unit_sales promoted vs not promoted 41.13 vs 28.02 on the training part (correlation only); holidays touch few store-days: national 5.32%, local 0.29%, regional 0 (no regional holiday province among our 6 states). T8 encoding list (11 points) is in the notebook.
-Decisions:T6 reassigned to Raghad on Nov 17; reviewer changed from Zahraa to Nour. Promotions analysed before holidays. Sales-around-holidays chart: done (Navidad and Fundacion de Quito). No regional holiday flag in v1; the Transfer row is the real celebration day; Events kept out of holiday flags; holiday flags built from date, locale and place so the method transfers to another country.
-Open: rule for no-record days (Dec 25, Jan 1; closure not verified) and the 20.6% of store-item-days with no row; deduplicate holiday flags before merging (24 matched local rows = 22 distinct store-days); T8 encoding priorities and a test of "days to/since holiday" on the time split; promoted vs not promoted gap is wider in the last 3 months (46.02 vs 25.93, training 41.13 vs 28.02), noted only, nothing tuned.
+**Done:** T6 EDA of promotions and holidays merged (PR #24, Closes #22), `notebooks/02_eda_promo_holidays_raghad.ipynb`. Owner: Raghad. Reviewed by Nour.
+
+Findings:
+- Promoted share: **12.83%** (ranging from 10.57% to 14.78% by store).
+- Average unit sales for promoted vs. non-promoted observations: **41.13 vs. 28.02** on the training split (correlation only, not causation).
+- Promotions have a wider sales gap in the last 3 months: **46.02 vs. 25.93**, compared with 41.13 vs. 28.02 across the training period. Noted for analysis only; nothing tuned.
+- Holidays affect relatively few store-days: national 5.32%, local 0.29%, regional 0% (none of the six states has a regional holiday province).
+- Holiday vs. regular days (same weekday):
+  - Days off: approximately **+10%** (1.098).
+  - Shopping days (Additional/Bridge): approximately **+38%** (1.384).
+  - Local holidays: no clear effect (0.955, based on 21 store-days).
+- T8 encoding list (11 points) is included in the notebook and updated with two national flags.
+
+**Decisions:**
+- T6 reassigned to Raghad on November 17.
+- Reviewer changed from Zahraa to Nour.
+- Promotions analysed before holidays.
+- Sales-around-holidays chart completed (Navidad and Fundacion de Quito).
+- No regional holiday flag in v1.
+- The Transfer row represents the actual celebration day.
+- Events kept out of holiday flags.
+- Holiday flags are built from date, locale, and place so the methodology can transfer to another country.
+
+**Open:**
+- Promotions by product family left for later.
+- Rule for no-record days (Dec 25, Jan 1; closure not verified).
+- Investigate the 20.6% of store-item-days with no row.
+- Deduplicate holiday flags before merging (24 matched local rows = 22 distinct store-days).
+- Finalize T8 encoding priorities and test "days to/since holiday" on the time split.
+- Add the follow-up PR number once it is open. 
 
 ## 2026-11-15
 Done: T4 sample built by src/subsample.py (Ali) and small tables by src/small_tables.py (Leen), all in restockai-work/interim, paths from src/config.py. sales_sample_v1.parquet: 1,741,225 rows, 2015-08-01 to 2017-07-31, 12 stores, 250 items, 105 perishable (42.0%), 15 families, 0.00% empty onpromotion, 55 negative unit_sales rows, 5.6 MB. stores_v1 (54 rows), items_v1 (4,100 rows), holidays_events_v1 (350 rows). First pass 189 s, whole script 317 s on free Colab. notes/dataset-check.md updated with the measured facts (Leen). DATA.md has the 4 files. PR for #17 opened, reviewer Raghad.
