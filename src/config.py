@@ -17,3 +17,7 @@ SALES_SAMPLE = f"{INTERIM}/sales_sample_v1.parquet"
 STORES_OUT = f"{INTERIM}/stores_v1.parquet"
 ITEMS_OUT = f"{INTERIM}/items_v1.parquet"
 HOLIDAYS_OUT = f"{INTERIM}/holidays_events_v1.parquet"
+
+# T7 additions
+SALES_CLEAN = f"{INTERIM}/sales_clean_v1.parquet"
+SALES_QUARANTINE = f"{INTERIM}/sales_quarantine_v1.parquet"
