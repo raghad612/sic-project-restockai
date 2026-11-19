@@ -14,12 +14,30 @@ import time
 import pandas as pd
 
 from src.config import SALES_SAMPLE, SALES_CLEAN, SALES_QUARANTINE
+from src.subsample import WIN_START, WIN_END      # NEW: same window as T4, one source
 
 
 def find_bad_rows(df):
     """Leen: duplicate, null and type checks.
     Returns (bad_rows with 'reason' column, good_df)."""
     raise NotImplementedError  # Leen fills this in
+
+
+def check_dates(df):                                                  # NEW
+    """Ali: date parsing + window check.
+    Returns (bad_rows with 'reason' column, good_df)."""
+    parsed = pd.to_datetime(df["date"], errors="coerce")   # broken date -> NaT
+    bad_date = parsed.isna()
+    outside = ~bad_date & ((parsed < WIN_START) | (parsed > WIN_END))
+    is_bad = bad_date | outside
+
+    bad = df[is_bad].copy()
+    bad["reason"] = "outside_window"
+    bad.loc[bad_date[is_bad], "reason"] = "bad_date"
+
+    good = df[~is_bad].copy()
+    good["date"] = parsed[~is_bad]
+    return bad, good
 
 
 def main(overwrite=False):
@@ -40,7 +58,16 @@ def main(overwrite=False):
     rows_in = len(df)
     print(f"loaded: {rows_in:,} rows, columns = {list(df.columns)}")
 
-    # TODO next pieces: date check, window check, find_bad_rows, quarantine, summary
+    # ---- step 3 + 4: date parsing + window check                     # NEW
+    bad_dates, df = check_dates(df)
+    n_bad = (bad_dates["reason"] == "bad_date").sum()
+    n_out = (bad_dates["reason"] == "outside_window").sum()
+    print(f"date check: {n_bad:,} bad dates, {n_out:,} outside "
+          f"{WIN_START.date()} -> {WIN_END.date()}")
+    print(f"rows after date check: {len(df):,}  "
+          f"(dates {df['date'].min().date()} -> {df['date'].max().date()})")
+
+    # TODO next pieces: find_bad_rows, quarantine, summary
     print(f"time: {time.time() - t0:.1f} s")
 
 
