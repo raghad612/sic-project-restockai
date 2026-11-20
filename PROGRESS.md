@@ -2,6 +2,20 @@
 
 Newest first. Each entry: done, decisions, open issues.
 
+## 2026-11-20
+
+**Done:** T7 cleaning step (Issue #23), `src/clean.py`, run in full on Colab. Owners: Ali and Leen. `find_bad_rows` (schema, null and duplicate checks) by Leen; date and window checks, quarantine, zero-fill, flags and summary by Ali. Output: `sales_clean_v1.parquet` (1,900,532 rows = 1,741,225 in + 159,307 zero-filled) and `sales_quarantine_v1.parquet` (0 rows), both in restockai-work/interim. rows_in + filled = rows_out + quarantined: PASS. Both independent checks done (Leen: window, row counts; Ali: duplicates and nulls, all 0).
+
+**Decisions:**
+- (a) Negative unit_sales: kept, not deleted, flagged with `is_return`. T8 counts them as 0 demand when it builds the target.
+- (b) Missing zero-sales rows: zero-filled only inside each store-item's first-to-last-row period, skipping the 4 likely closure dates (2015-12-25, 2016-01-01, 2016-12-25, 2017-01-01; not verified). Filled rows get `is_filled`, family/class/perishable copied from the item, onpromotion null.
+- (c) kg vs counts: values unchanged, no conversion.
+- Apr 16-30 2016 kept and flagged with `quake_period`.
+
+**Open:**
+- T8 decides how to encode the null onpromotion on filled rows.
+- The active period is taken over the full window, so 3,828 zeros in the training part exist only because the item sold again after 2017-04-30. Raghad to decide if train and test should be computed separately.
+
 ## 2026-11-18
 
 **Done:** T6 EDA of promotions and holidays merged (PR #24, Closes #22), `notebooks/02_eda_promo_holidays_raghad.ipynb`. Owner: Raghad. Reviewed by Nour.
