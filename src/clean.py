@@ -11,16 +11,52 @@ import argparse
 import os
 import time
 
+import numpy as np
 import pandas as pd
 
 from src.config import SALES_SAMPLE, SALES_CLEAN, SALES_QUARANTINE
 from src.subsample import WIN_START, WIN_END      # same window as T4, one source
 
 
+# schema: a missing column or wrong type is a file problem, not a row problem -> error
+REQUIRED_COLS = ["date", "store_nbr", "item_nbr", "unit_sales",
+                 "onpromotion", "family", "class", "perishable"]
+KEY_COLS = ["date", "store_nbr", "item_nbr"]
+NUMERIC_COLS = ["store_nbr", "item_nbr", "unit_sales"]
+
+
 def find_bad_rows(df):
-    """Leen: duplicate, null and type checks.
-    Returns (bad_rows with 'reason' column, good_df)."""
-    raise NotImplementedError  # Leen fills this in
+    """Leen: schema check, null checks, duplicate check.
+    Returns (bad_rows with 'reason' column, good_df). Input df is not changed.
+
+    Reasons: null_<column> (key columns + unit_sales), duplicate (extra copies of a
+    (date, store, item); the first copy stays). A row with several problems is listed
+    once, reasons joined with ';'. Negative unit_sales are NOT bad (returns, flagged later).
+    """
+    # ---- schema (raise, do not quarantine)
+    missing = [c for c in REQUIRED_COLS if c not in df.columns]
+    if missing:
+        raise KeyError(f"missing required columns: {missing}. Found: {list(df.columns)}")
+    wrong = [c for c in NUMERIC_COLS if not pd.api.types.is_numeric_dtype(df[c])]
+    if wrong:
+        raise TypeError(f"columns must be numeric: {wrong}. "
+                        f"Got: { {c: str(df[c].dtype) for c in wrong} }")
+
+    # ---- one boolean mask per check (numpy, so a repeated index cannot break it)
+    checks = {f"null_{c}": df[c].isna().to_numpy() for c in KEY_COLS + ["unit_sales"]}
+    keys_ok = ~(checks["null_date"] | checks["null_store_nbr"] | checks["null_item_nbr"])
+    # why keys_ok: rows with a null key are not compared, NaN == NaN would fake duplicates
+    checks["duplicate"] = df.duplicated(KEY_COLS, keep="first").to_numpy() & keys_ok
+
+    # ---- one reason string per row, all failed checks joined
+    reason = np.full(len(df), "", dtype=object)
+    for name, mask in checks.items():
+        reason[mask] = np.where(reason[mask] == "", name, reason[mask] + ";" + name)
+    is_bad = reason != ""
+
+    bad = df[is_bad].copy()
+    bad["reason"] = reason[is_bad]
+    return bad, df[~is_bad].copy()
 
 
 def check_dates(df):
@@ -81,8 +117,11 @@ def main(overwrite=False):
     print(f"date check: {n_bad:,} bad dates, {n_out:,} outside "
           f"{WIN_START.date()} -> {WIN_END.date()}")
 
-    # ---- step 5: Leen's checks (added when find_bad_rows is ready)  # NEW
-    bad_parts = [bad_dates]
+    # ---- step 5: Leen's checks: schema, nulls, duplicates
+    bad_other, df = find_bad_rows(df)
+    print(f"null/duplicate check: {len(bad_other):,} rows quarantined "
+          f"{bad_other['reason'].value_counts().to_dict() if len(bad_other) else ''}")
+    bad_parts = [bad_dates, bad_other]
 
     # ---- step 6: count check, then save                             # NEW
     quarantine = pd.concat(bad_parts, ignore_index=True)
