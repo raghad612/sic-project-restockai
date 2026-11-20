@@ -4,6 +4,32 @@ Newest first. Each entry: done, decisions, open issues.
 
 ## 2026-11-18
 
+### T5 (PR #26, Closes #21)
+
+**Done:** T5 EDA notebook notebooks/01_eda_sales_fatima.ipynb (Fatima, Zahraa).
+
+Findings:
+- Sunday is the busiest weekday (27.6% above the weekly average) and Thursday the quietest (20.4% below); Sunday averages 1.6x Thursday's daily units (train part). Saturday is 15.3% above the weekly average, so weekends (Sat + Sun) are clearly higher.
+- BEVERAGES is the top family with 30.2% of all units (train part) (units mix counts and kg; sample, not the real family mix).
+- The biggest store sells 3.92x the smallest store.
+- Sales are very skewed: median positive unit_sales is 17.0 per row, but the 99.9th percentile is 597.6.
+- 20.3% of store-item-days have no row (per calendar day, 639 days in the training part), and there are 0 explicit zeros: a day with no sale is probably a missing row. Store 33 has the most gaps (26.4%), store 39 the fewest (15.9%).
+- Share of non-whole rows by family: POULTRY 99.6%, MEATS 98.7%, PRODUCE 60.3%. Probably sold by weight. Overall, 18.2% of positive rows are not whole numbers.
+- After the Apr 16 2016 earthquake, units per day were 19.3% higher (Apr 16-30 vs Apr 1-15), matching T4.
+- Average daily units were 4.2% lower in Aug16-Apr17 than in Aug15-Apr16, in this sample only.
+
+Decisions: all numbers use the training part only; missing share uses calendar days, same as T4. No data changed.
+
+Open:
+- Missing store-item-days (zeros): 20.3% have no row (per calendar day) and there are no explicit zeros. T7 decides whether to fill them with 0 (some may be "not stocked yet", not "no sale"). 4 calendar dates have no sales in any store (likely closures): 2015-12-25, 2016-01-01, 2016-12-25, 2017-01-01.
+- Negative values: 45 rows in the training part (sum -3791.24; 55 in the full file, as T4 said), 19 of them BEVERAGES. Possibly returns; one very large negative value (-1806), cause unknown. T7 decides: clip to 0, drop, or keep.
+- kg vs counts: POULTRY, MEATS, PRODUCE (and partly PREPARED FOODS, FROZEN FOODS) are sold by weight. Do not mix with count families without care (e.g. in totals or scaling).
+- Capped families / DAIRY only 6 items: GROCERY I, BEVERAGES, PRODUCE are at the 62-item cap; DAIRY has 6, LIQUOR,WINE,BEER only 2. Family-level totals reflect the sample, not real store mix.
+- April 2016: +19.3% after the earthquake. T8 may need a flag/feature for this period, or T7 may treat it as unusual.
+- New: store 33 has 26.4% missing days (highest); sales are heavily skewed (99.9th pct 597.6 vs median 17), so outliers need a rule.
+
+### T6 (PR #24)
+
 **Done:** T6 EDA of promotions and holidays merged (PR #24, Closes #22), `notebooks/02_eda_promo_holidays_raghad.ipynb`. Owner: Raghad. Reviewed by Nour.
 
 Findings:
