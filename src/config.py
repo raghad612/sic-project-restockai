@@ -21,3 +21,6 @@ HOLIDAYS_OUT = f"{INTERIM}/holidays_events_v1.parquet"
 # T7 additions
 SALES_CLEAN = f"{INTERIM}/sales_clean_v1.parquet"
 SALES_QUARANTINE = f"{INTERIM}/sales_quarantine_v1.parquet"
+
+# T8 additions
+FEATURES = f"{PROCESSED}/features_v1.parquet"
