@@ -56,28 +56,34 @@ Honest comparison: baseline vs ML vs DL
 
 ## 3. Timeline and gates
 
-All dates are 2026. Treat every date after Nov 24 as provisional until the official guidelines arrive.
+All dates are 2026.
 
-| Phase / event | Dates | What happens | Gate |
-|---|---|---|---|
-| Phase 1: Data and baseline | Nov 6 - Nov 22 | Lock dataset, subsample, EDA, cleaning, features, time split, naive baseline | Nov 22: the naive baseline runs end to end |
-| Phase 2: ML | Nov 23 - Nov 28 | LightGBM, then quantile forecasts, then walk-forward backtest | Nov 28: ML beats the baseline on the time split, or we know why not |
-| Capstone intro session | Nov 25 | Official introduction | None |
-| Phase 3: DL and comparison | Nov 25 - Dec 1 | One simple DL model with a fixed time budget, starting in parallel with Phase 2 (a different pair). Honest ML vs DL comparison after the Nov 28 ML gate | Dec 1: first Action Plan draft due |
-| Mentoring session 1 | Dec 2 - Dec 4 | Feedback (exact slot to be confirmed) | Dec 5: final Action Plan due |
-| Product layer (provisional) | Dec 6 - Dec 8 | Decision layer, template explanations, minimal app. To be confirmed once the official guidelines arrive | Dec 8: feature freeze |
-| Deliverables (provisional) | Dec 9 - Dec 14 | Report, slides, README, code reference, rehearsals. Mentoring session 3 around Dec 13-15 | None |
-| Final deadline | Dec 15 | Final deadline. Pitch date: to be confirmed | Dec 15 |
+| Phase / event | Dates | Gate |
+|---|---|---|
+| Phase 1 Data and baseline | Nov 6 - Nov 24 | Nov 24: naive baseline runs end to end (slipped from Nov 22) |
+| Phase 2 ML | Nov 25 - Nov 28 | Nov 28: ML beats baseline on the time split, or we know why not |
+| Capstone intro session | Nov 25, 7:30pm Amman | none |
+| Action Plan draft and WBS v1 | ready Nov 28, submitted Nov 29 | official date Dec 1 |
+| Phase 3 DL and comparison | Nov 29 - Dec 3 | ML vs DL comparison done Dec 3 |
+| Mentoring 1 | Dec 2, 6:45pm Amman | feedback on Action Plan draft |
+| Final Action Plan | submitted Dec 4 | official date Dec 5 |
+| Mentoring 2 | Dec 6, 6:45pm Amman | report outline and ML/DL numbers ready Dec 5 |
+| Product layer | Dec 6 - Dec 9 | Dec 9: feature freeze |
+| Deliverables | Dec 10 - Dec 14 | slides draft Dec 11; pitch practice Dec 13 (mentoring 3); all ready Dec 14 |
+| Submission | Dec 15 | official deadline Dec 17, 11pm Amman; Dec 16-17 emergency only |
+| Final pitch | Dec 18 or 19 | live, scored, slot not given |
+
+Team rule: every deliverable is finished at least 3 days before the official date. Dates after Nov 25 stay provisional until the intro session is checked.
 
 Rules:
 - If a milestone slips by more than 2 days, tell Raghad immediately. We decide together what to cut.
-- Nothing new is added after the Dec 8 feature freeze unless something else is cut.
+- Nothing new is added after the Dec 9 feature freeze unless something else is cut.
 
 ---
 
 ## 4. Phase-by-phase explanation
 
-### Phase 1: Data and baseline (Nov 6 - Nov 15)
+### Phase 1: Data and baseline (Nov 6 - Nov 24)
 
 **Aim.** Lock the dataset, prepare clean data and features, and get a naive baseline running end to end.
 
@@ -89,7 +95,7 @@ Rules:
 - Data leakage: using information from the future to predict the past. We build every lag and rolling feature from past rows only.
 - Random split: splitting rows randomly mixes future and past. We always split by date.
 
-### Phase 2: Machine learning (Nov 16 - Nov 24)
+### Phase 2: Machine learning (Nov 25 - Nov 28)
 
 **Aim.** Train one global LightGBM model (one model for all stores and items, with store, item family, promotion and holiday as features), then quantile models that give a low, middle and high forecast.
 
@@ -102,7 +108,7 @@ Rules:
 - Cold start: a new store or item has no history. The global model handles it through store and item-family features, so we do not retrain per store.
 - Overfitting: the model memorises the training period. We validate only on later dates and use early stopping.
 
-### Phase 3: Deep learning and comparison (Nov 25 - Dec 1)
+### Phase 3: Deep learning and comparison (Nov 29 - Dec 3)
 
 **Aim.** Train one small MLP or LSTM within a fixed time budget and compare it with the baseline and LightGBM using the same split and metrics.
 
@@ -199,20 +205,13 @@ Proposed metrics (to be confirmed in T9): MAE (average absolute error), WAPE (to
 - **Why:** Past sales are the strongest predictor of future sales.
 - **Steps:**
   1. Create `src/features.py`.
-  2. Add lag features (for example 7, 14 and 28 days).
+  2. Add lag features (lags 1, 7, 14).
   3. Add rolling means over past windows.
   4. Add calendar features (day of week, month), plus promotion and holiday flags.
   5. Save the feature table, versioned, in `restockai-work/processed`, and log it in `DATA.md`.
 - **Pitfall:** Leakage. A rolling mean must skip today's row, otherwise today's sales leak into the feature.
 - **Done when:** `src/features.py` builds lags, rolling means and calendar features using only past data; the feature file is versioned and in `DATA.md`.
-- **If stuck:** Use this pattern (column names depend on the chosen dataset):
-
-```python
-# why: shift(1) first, so today's sales are never inside the average
-df["roll7"] = (
-    df.groupby(["store", "item"])["sales"]
-      .transform(lambda s: s.shift(1).rolling(7).mean())
-)
+- **If stuck:** Build lags and rolling means BY DATE from days up to t-1. A plain shift(1) then rolling is wrong when days are missing (not every store-item has a row every day). Check: no duplicate store-item-date rows after merges; test one store-item by hand. Lags used: 1, 7, 14. Rolling means: 7 and 28.
 ```
 
 ### T9: Time split, metric and naive baseline (phase close)
@@ -225,6 +224,7 @@ df["roll7"] = (
   4. Save the real error number and how it was computed in `notes/results.md`.
   5. Do the phase-close steps (section 7).
 - **Done when:** The time split uses fixed dates, the metrics are in `src/metrics.py`, the naive baseline runs end to end, and its real error is saved in `notes/results.md`.
+- Score the baseline and every later model on the same rows. Rows with no value 7 days earlier are handled by one stated rule, written in `notes/results.md`.
 - **If stuck:** Check that the baseline compares day t with day t-7 for the same store and item.
 
 ### T10: LightGBM
@@ -249,6 +249,7 @@ df["roll7"] = (
   4. Fix them by sorting the three values per row, and report the count.
 - **Pitfall:** Quantile crossing.
 - **Done when:** The table is clean, and the number of crossings is checked and fixed.
+- Check interval coverage: the share of actual sales between q10 and q90 (expected about 80%). Report the number even if it is far from 80%.
 - **If stuck:** `np.sort(df[["q10","q50","q90"]].values, axis=1)` puts each row in order.
 
 ### T12: Walk-forward backtest and comparison (phase close)
@@ -260,6 +261,7 @@ df["roll7"] = (
   3. Average the metrics and save a comparison table in `notes/results.md`.
   4. Do the phase-close steps.
 - **Done when:** A 3-month walk-forward backtest is run for baseline and ML, with the comparison table saved in `notes/results.md`.
+- Check interval coverage: the share of actual sales between q10 and q90 (expected about 80%). Report the number even if it is far from 80%.
 - **If stuck:** Start with 3 monthly folds before trying weekly ones.
 
 ### T13: Deep learning model with a time budget
@@ -272,6 +274,7 @@ df["roll7"] = (
   4. Evaluate with the same metrics.
 - **Pitfall:** Overfitting and wasted time. Stop at the budget and report what you have.
 - **Done when:** One small MLP or LSTM is trained within the fixed budget, on the same split and metrics as ML.
+- Follow the section order of Tutorial_01 (read, look, prepare, build, hyperparameters, train, history plot, test) but validate on a later time period, never validation_split. Verify lr vs learning_rate in Colab. Starts Nov 29.
 - **If stuck:** If an LSTM is too slow, use a plain MLP on the T8 features.
 
 ### T14: ML vs DL comparison (phase close)
@@ -284,6 +287,15 @@ df["roll7"] = (
   4. Do the phase-close steps.
 - **Done when:** The comparison table and written conclusion are in `notes/results.md`; phase-close steps are done.
 - **If stuck:** Describe trade-offs: accuracy vs speed vs complexity.
+
+### T15: Action Plan draft
+- **Goal:** Fill the 11 fields of the official Action Plan template from the brief.
+- **Done when:** Word file ready Nov 28, submitted Nov 29 in the Slack channel and by email to support@imtiaz-me.com.
+- **Owner:** Set on the Issue.
+
+### T16: WBS v1
+- **Goal:** Fill the official WBS Excel from the board.
+- **Done when:** `WBS_v1.xlsx` is in Drive and logged in `DATA.md`. Only the leader edits it.
 
 ---
 
@@ -355,6 +367,7 @@ git checkout main && git pull
 2. Open the PR with `Closes #N` and ask for one review.
 3. Add a row to `DATA.md` if you created a shared data file.
 4. Add an entry to `PROGRESS.md` (done, decisions, open issues).
+   - Add one extra line: "For report section X.X: ..." (2.1 Data Acquisition, 3.1 Data Preprocessing, 3.2 EDA, 3.3 Modeling, 3.5 Testing and Improvements).
 5. After the merge, check that the Issue is closed and the card is in Done. If not, move it yourself.
 
 ### Extra steps for phase-close tasks (T9, T12, T14)
@@ -364,6 +377,7 @@ git checkout main && git pull
 4. Close finished Issues and create the next phase's Issues.
 5. Update `CONTRIBUTING.md` only if a team rule changed.
 6. Re-check the phase gate and say whether it passed.
+7. Every training script saves its outputs to Drive at the end of each step (Colab can disconnect).
 
 ---
 
@@ -393,6 +407,7 @@ restockai-work/
   interim/           subsample (T4) and cleaned data (T7)
   processed/         feature tables and train/test splits (T8, T9)
   outputs/           predictions, metrics and trained models
+    WBS_v1.xlsx     Drive only, never committed; only the leader edits it; logged in DATA.md
 ```
 
 Paths live in `src/config.py`. Never hardcode personal paths.
@@ -406,6 +421,8 @@ Paths live in `src/config.py`. Never hardcode personal paths.
 - A card that stays In progress for more than 3 days gets flagged, and we help.
 - Raghad resends GitHub invites that are older than 5 days.
 - Keep every Issue current: assignee set, card in the right column, comments answered.
+- Weekly: the leader updates the WBS every weekend from the board; it is on the sync agenda. Phase close updates the WBS statuses.
+- Every training script saves its outputs to Drive at the end of each step (Colab can disconnect).
 
 ---
 
@@ -489,3 +506,4 @@ Every PR needs one approval from someone who is not the author. Raghad reviews u
 |---|---|---|
 | v1 | Nov 10, 2026 | First release |
 | v1.1 | Nov 12, 2026 | T4 step 1 and 2 updated after the raw data download |
+| v1.2 | Nov 22, 2026 | Official dates, 3-day buffer, T8 snippet fix, T15 and T16, WBS rules |
