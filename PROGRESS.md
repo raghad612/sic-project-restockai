@@ -21,6 +21,8 @@ Newest first. Each entry: done, decisions, open issues.
 - onpromotion is NaN exactly on the zero-filled rows (target = 0), so a model can learn "NaN means 0 sales". In real use the promotion plan is known, so this pattern would not exist. The ML phase should decide how to handle it.
 - Possible v2 features from T6 (not built, need Raghad's OK): Black Friday/Cyber Monday flag (point 6), days to Christmas (point 9, needs a time-split check first).
 
+**For report section 3.1:** features_v1 gives the model one row per store-item-day with the target (sales, returns set to 0), calendar and holiday flags, lags 1/7/14 and rolling means 7/28 built by date from past days only, and onpromotion kept missing on zero-filled days, checked by hand so no feature uses future information.
+
 ## 2026-11-20
 
 **Done:** T7 cleaning step (Issue #23), `src/clean.py`, run in full on Colab. Owners: Ali and Leen. `find_bad_rows` (schema, null and duplicate checks) by Leen; date and window checks, quarantine, zero-fill, flags and summary by Ali. Output: `sales_clean_v1.parquet` (1,900,532 rows = 1,741,225 in + 159,307 zero-filled) and `sales_quarantine_v1.parquet` (0 rows), both in restockai-work/interim. rows_in + filled = rows_out + quarantined: PASS. Both independent checks done (Leen: window, row counts; Ali: duplicates and nulls, all 0).
