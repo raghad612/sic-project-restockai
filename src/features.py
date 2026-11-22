@@ -21,12 +21,13 @@ import numpy as np
 import pandas as pd
 
 from src.config import SALES_CLEAN, HOLIDAYS_OUT, STORES_OUT, FEATURES
+from src.subsample import TRAIN_END                 # 2017-04-30, same split as T4, one source
+from src.clean import QUAKE_START, QUAKE_END        # same quake window as T7, one source
 
+# the functions only need these columns, so they run on the sample and the clean file
+REQUIRED_COLS = ["date", "store_nbr", "item_nbr", "unit_sales", "onpromotion"]
 KEYS = ["date", "store_nbr", "item_nbr"]
 SERIES = ["store_nbr", "item_nbr"]                 # one time series per store-item
-TRAIN_END = pd.Timestamp("2017-04-30")             # last day of the training part
-QUAKE_START = pd.Timestamp("2016-04-16")           # same window as T7
-QUAKE_END = pd.Timestamp("2016-04-30")
 LAGS = [1, 7, 14]
 WINDOWS = [7, 28]
 
@@ -195,6 +196,10 @@ def summarize(df, missing, seconds):
 
 # ---------------------------------------------------------------- main
 def main(overwrite=False):
+    # ---- step 1: safety checks (same pattern as subsample.py and clean.py)
+    for path in (SALES_CLEAN, HOLIDAYS_OUT, STORES_OUT):
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"{path} not found. Is Drive mounted? Did T4/T7 run?")
     out_dir = os.path.dirname(FEATURES)
     if not os.path.isdir(out_dir):
         raise FileNotFoundError("restockai-work/processed not found. Is Drive mounted?")
@@ -202,16 +207,26 @@ def main(overwrite=False):
         raise FileExistsError(f"{FEATURES} already exists. v1 is not overwritten "
                               "silently: delete it on purpose or use --overwrite.")
     t0 = time.time()
+    input_mtime = os.path.getmtime(SALES_CLEAN)
+
+    # ---- step 2: load (read only, the input files are never changed)
     sales = pd.read_parquet(SALES_CLEAN)
     holidays = pd.read_parquet(HOLIDAYS_OUT)
     stores = pd.read_parquet(STORES_OUT)
     print(f"loaded: {len(sales):,} rows, columns = {list(sales.columns)}")
+    missing_cols = [c for c in REQUIRED_COLS if c not in sales.columns]
+    if missing_cols:
+        raise KeyError(f"missing required columns: {missing_cols}")
 
+    # ---- step 3: build features, then stop if any rule is broken (nothing saved)
     df = build_features(sales, holidays, stores)
     missing = check_features(sales, df)
     print("checks: PASS")
 
+    # ---- step 4: save
     df.to_parquet(FEATURES, index=False)
+    if os.path.getmtime(SALES_CLEAN) != input_mtime:
+        raise RuntimeError(f"{SALES_CLEAN} was modified. It must never change.")
     print(f"saved: {FEATURES} ({os.path.getsize(FEATURES) / 1e6:.1f} MB)")
     print("\nSUMMARY (paste in the PR)")
     print(summarize(df, missing, time.time() - t0))
