@@ -1,7 +1,7 @@
 # ReStock AI - Project Playbook
 
 Team Forecast Crew, Samsung Innovation Campus (SIC) AI capstone, 2026.
-Version 1 (Nov 10, 2026). This is a living document: the team always follows the latest version in the repo.
+Version 1.2 (Nov 22, 2026). This is a living document: the team always follows the latest version in the repo.
 
 If you are new and confused, read sections 1, 3 and 7 first, then do your first PR (section 7).
 
@@ -32,7 +32,7 @@ Kaggle dataset (subsample: 10-15 stores, about 2 years)
 Cleaning (fix dates, remove duplicates, quarantine impossible rows)
         |
         v
-Features (lags 7/14/28 days, rolling means, calendar, promotion, holiday)
+Features (lags 1/7/14 days, rolling means 7/28, calendar, promotion, holiday)
         |
         v
 Time split (train on the past, test on the future, never random)
@@ -206,13 +206,12 @@ Proposed metrics (to be confirmed in T9): MAE (average absolute error), WAPE (to
 - **Steps:**
   1. Create `src/features.py`.
   2. Add lag features (lags 1, 7, 14).
-  3. Add rolling means over past windows.
+  3. Add rolling means over past windows (7 and 28 days).
   4. Add calendar features (day of week, month), plus promotion and holiday flags.
   5. Save the feature table, versioned, in `restockai-work/processed`, and log it in `DATA.md`.
 - **Pitfall:** Leakage. A rolling mean must skip today's row, otherwise today's sales leak into the feature.
 - **Done when:** `src/features.py` builds lags, rolling means and calendar features using only past data; the feature file is versioned and in `DATA.md`.
 - **If stuck:** Build lags and rolling means BY DATE from days up to t-1. A plain shift(1) then rolling is wrong when days are missing (not every store-item has a row every day). Check: no duplicate store-item-date rows after merges; test one store-item by hand. Lags used: 1, 7, 14. Rolling means: 7 and 28.
-```
 
 ### T9: Time split, metric and naive baseline (phase close)
 - **Goal:** Fix the evaluation rules and get the first real number.
@@ -223,8 +222,8 @@ Proposed metrics (to be confirmed in T9): MAE (average absolute error), WAPE (to
   3. Build the naive baseline: tomorrow's forecast = sales 7 days earlier.
   4. Save the real error number and how it was computed in `notes/results.md`.
   5. Do the phase-close steps (section 7).
+- **Rule:** Score the baseline and every later model on the same rows. Rows with no value 7 days earlier are handled by one stated rule, written in `notes/results.md`.
 - **Done when:** The time split uses fixed dates, the metrics are in `src/metrics.py`, the naive baseline runs end to end, and its real error is saved in `notes/results.md`.
-- Score the baseline and every later model on the same rows. Rows with no value 7 days earlier are handled by one stated rule, written in `notes/results.md`.
 - **If stuck:** Check that the baseline compares day t with day t-7 for the same store and item.
 
 ### T10: LightGBM
@@ -248,8 +247,8 @@ Proposed metrics (to be confirmed in T9): MAE (average absolute error), WAPE (to
   3. Count rows where the order is wrong (q10 > q50 or q50 > q90).
   4. Fix them by sorting the three values per row, and report the count.
 - **Pitfall:** Quantile crossing.
+- **Check:** Interval coverage: the share of actual sales between q10 and q90 (expected about 80%). Report the number even if it is far from 80%.
 - **Done when:** The table is clean, and the number of crossings is checked and fixed.
-- Check interval coverage: the share of actual sales between q10 and q90 (expected about 80%). Report the number even if it is far from 80%.
 - **If stuck:** `np.sort(df[["q10","q50","q90"]].values, axis=1)` puts each row in order.
 
 ### T12: Walk-forward backtest and comparison (phase close)
@@ -260,8 +259,8 @@ Proposed metrics (to be confirmed in T9): MAE (average absolute error), WAPE (to
   2. Run the baseline and the ML models in the same loop.
   3. Average the metrics and save a comparison table in `notes/results.md`.
   4. Do the phase-close steps.
+- **Check:** Interval coverage: the share of actual sales between q10 and q90 (expected about 80%). Report the number even if it is far from 80%.
 - **Done when:** A 3-month walk-forward backtest is run for baseline and ML, with the comparison table saved in `notes/results.md`.
-- Check interval coverage: the share of actual sales between q10 and q90 (expected about 80%). Report the number even if it is far from 80%.
 - **If stuck:** Start with 3 monthly folds before trying weekly ones.
 
 ### T13: Deep learning model with a time budget
@@ -272,9 +271,9 @@ Proposed metrics (to be confirmed in T9): MAE (average absolute error), WAPE (to
   2. Build a small MLP or LSTM in PyTorch or Keras.
   3. Use the same split and features as the ML models.
   4. Evaluate with the same metrics.
+- **Rule:** Follow the section order of Tutorial_01 (read, look, prepare, build, hyperparameters, train, history plot, test) but validate on a later time period, never validation_split. Verify lr vs learning_rate in Colab. Starts Nov 29.
 - **Pitfall:** Overfitting and wasted time. Stop at the budget and report what you have.
 - **Done when:** One small MLP or LSTM is trained within the fixed budget, on the same split and metrics as ML.
-- Follow the section order of Tutorial_01 (read, look, prepare, build, hyperparameters, train, history plot, test) but validate on a later time period, never validation_split. Verify lr vs learning_rate in Colab. Starts Nov 29.
 - **If stuck:** If an LSTM is too slow, use a plain MLP on the T8 features.
 
 ### T14: ML vs DL comparison (phase close)
@@ -290,11 +289,12 @@ Proposed metrics (to be confirmed in T9): MAE (average absolute error), WAPE (to
 
 ### T15: Action Plan draft
 - **Goal:** Fill the 11 fields of the official Action Plan template from the brief.
-- **Done when:** Word file ready Nov 28, submitted Nov 29 in the Slack channel and by email to support@imtiaz-me.com.
-- **Owner:** Set on the Issue.
+- **Why:** The draft is due Dec 1 and is discussed in mentoring on Dec 2.
+- **Done when:** Word file ready Nov 28, submitted Nov 29 in the Slack channel and by email to support@imtiaz-me.com. Owner: set on the Issue.
 
 ### T16: WBS v1
 - **Goal:** Fill the official WBS Excel from the board.
+- **Why:** The Action Plan refers to it, and it is a Dec 17 deliverable.
 - **Done when:** `WBS_v1.xlsx` is in Drive and logged in `DATA.md`. Only the leader edits it.
 
 ---
@@ -329,6 +329,7 @@ CONTRIBUTING.md is the rule book. If this section ever differs from it, CONTRIBU
 - The owner moves their own card: In progress when starting, Review when the PR is open. Then comment "PR ready" on the Issue.
 - Shared data files: one writer per file, a version in the file name (for example `sales_clean_v1.parquet`), and one row in `DATA.md` (name, folder, owner, script, date).
 - Notebooks: one owner per notebook, outputs cleared before commit. Reusable code goes in `src/*.py`.
+- Every training script saves its outputs to Drive at the end of each step (Colab can disconnect).
 - Never commit data, models or keys. Never put Drive links in the repo.
 
 ### Task life cycle
@@ -366,8 +367,7 @@ git checkout main && git pull
 1. List the files you changed and write a clear commit message.
 2. Open the PR with `Closes #N` and ask for one review.
 3. Add a row to `DATA.md` if you created a shared data file.
-4. Add an entry to `PROGRESS.md` (done, decisions, open issues).
-   - Add one extra line: "For report section X.X: ..." (2.1 Data Acquisition, 3.1 Data Preprocessing, 3.2 EDA, 3.3 Modeling, 3.5 Testing and Improvements).
+4. Add an entry to `PROGRESS.md` (done, decisions, open issues). It gets one extra line: "For report section X.X: ..." (2.1 Data Acquisition, 3.1 Data Preprocessing, 3.2 EDA, 3.3 Modeling, 3.5 Testing and Improvements).
 5. After the merge, check that the Issue is closed and the card is in Done. If not, move it yourself.
 
 ### Extra steps for phase-close tasks (T9, T12, T14)
@@ -377,7 +377,6 @@ git checkout main && git pull
 4. Close finished Issues and create the next phase's Issues.
 5. Update `CONTRIBUTING.md` only if a team rule changed.
 6. Re-check the phase gate and say whether it passed.
-7. Every training script saves its outputs to Drive at the end of each step (Colab can disconnect).
 
 ---
 
@@ -407,7 +406,7 @@ restockai-work/
   interim/           subsample (T4) and cleaned data (T7)
   processed/         feature tables and train/test splits (T8, T9)
   outputs/           predictions, metrics and trained models
-    WBS_v1.xlsx     Drive only, never committed; only the leader edits it; logged in DATA.md
+                     WBS_v1.xlsx (Drive only, never committed, only the leader edits, logged in DATA.md)
 ```
 
 Paths live in `src/config.py`. Never hardcode personal paths.
@@ -418,10 +417,10 @@ Paths live in `src/config.py`. Never hardcode personal paths.
 
 - Weekly 20-minute sync: what is done, what is next, what is blocked.
 - A short status message to the team after each sync.
+- Weekly: the leader updates the WBS every weekend from the board; it is on the sync agenda. Phase close updates the WBS statuses.
 - A card that stays In progress for more than 3 days gets flagged, and we help.
 - Raghad resends GitHub invites that are older than 5 days.
 - Keep every Issue current: assignee set, card in the right column, comments answered.
-- Weekly: the leader updates the WBS every weekend from the board; it is on the sync agenda. Phase close updates the WBS statuses.
 - Every training script saves its outputs to Drive at the end of each step (Colab can disconnect).
 
 ---
