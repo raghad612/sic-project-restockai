@@ -2,6 +2,25 @@
 
 Newest first. Each entry: done, decisions, open issues.
 
+## 2026-11-22
+
+**Done:** T8 features (Issue #28), `src/features.py`, run in full on Colab. Owner: Zahraa. Output: `features_v1.parquet` (1,900,532 rows = same as sales_clean_v1, 25 columns) in restockai-work/processed. Check notebook: `notebooks/03_features_check_zahraa.ipynb`: checks in sections 0-9 all PASS (assert), section 10 lists missing values per column.
+
+**Decisions:**
+- (a) target = unit_sales with negatives set to 0 (55 rows).
+- (b) Lags (1, 7, 14) and rolling means (7, 28) go by date, never by row: lags merge on a shifted date, rolling means use a 7D/28D window with closed="left" (today excluded). A missing day gives a missing lag, not a wrong one.
+- (c) Holidays follow T6: hol_national_dayoff (Holiday/Transfer), hol_national_shopping (Additional/Bridge), hol_local (matched on city). No regional flag, no Events, Transfer row is the real day. Deduplicated before merging (answers T6: 24 matched local rows = 22 distinct store-days). Training part: 34 national dates (20 day-off + 14 shopping, as in T6) and 22 local store-days; 17 day-off dates on sales rows, because 3 are closures with no rows.
+- (d) onpromotion: float32 (1 = promo, 0 = no promo), NaN kept on the 159,307 zero-filled rows (answers T7's open item). Reason: we do not know if there was a promotion on those days, and LightGBM handles NaN in numeric columns. Pitfall: filling with 0 would invent "no promotion" on days we know nothing about.
+- (e) fill_after_last_train: 3,828 rows (same as T7). Rows kept, the ML phase skips them in training.
+- (f) quake_period kept from T7, not recreated.
+- (g) Item columns (family, class, perishable) kept as they are from T7.
+
+**Open:**
+- 2 store-days with no rows beyond the 4 chain-wide closures (50 found, 48 expected), cause not explained, not fixed in T8.
+- Flagged fill_after_last_train zeros still count in the lags and rolling means of later rows, including the first test rows.
+- onpromotion is NaN exactly on the zero-filled rows (target = 0), so a model can learn "NaN means 0 sales". In real use the promotion plan is known, so this pattern would not exist. The ML phase should decide how to handle it.
+- Possible v2 features from T6 (not built, need Raghad's OK): Black Friday/Cyber Monday flag (point 6), days to Christmas (point 9, needs a time-split check first).
+
 ## 2026-11-20
 
 **Done:** T7 cleaning step (Issue #23), `src/clean.py`, run in full on Colab. Owners: Ali and Leen. `find_bad_rows` (schema, null and duplicate checks) by Leen; date and window checks, quarantine, zero-fill, flags and summary by Ali. Output: `sales_clean_v1.parquet` (1,900,532 rows = 1,741,225 in + 159,307 zero-filled) and `sales_quarantine_v1.parquet` (0 rows), both in restockai-work/interim. rows_in + filled = rows_out + quarantined: PASS. Both independent checks done (Leen: window, row counts; Ali: duplicates and nulls, all 0).
