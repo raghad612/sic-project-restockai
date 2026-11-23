@@ -6,7 +6,7 @@ import os
 
 import pandas as pd
 
-from src.config import FEATURES, BASELINE_PREDICTIONS
+from src.config import FEATURES, BASELINE_PREDICTIONS, BASELINE_METRICS
 from src.metrics import mae, wape
 from src.split import split_by_date
 
@@ -58,8 +58,6 @@ def evaluate_period(data, name):
             "WAPE_percent": wape(group["target"], group["prediction"]),
         })
 
-    results_df = pd.DataFrame(results)
-
     count_rows = eligible.loc[
         ~eligible["family"].astype(str).str.strip().str.upper().isin(
             KG_FAMILIES | MIXED_FAMILIES
@@ -69,17 +67,30 @@ def evaluate_period(data, name):
     if count_rows.empty:
         raise ValueError(f"No count-family rows in {name}")
 
-    print(
-        "Count-family overall MAE:",
-        mae(count_rows["target"], count_rows["prediction"])
-    )
-    print(
-        "Count-family overall WAPE (%):",
-        wape(count_rows["target"], count_rows["prediction"])
-    )
+    results.append({
+        "period": name,
+        "family": "COUNT_OVERALL",
+        "unit_type": "count",
+        "rows": len(count_rows),
+        "MAE": mae(count_rows["target"], count_rows["prediction"]),
+        "WAPE_percent": wape(count_rows["target"], count_rows["prediction"]),
+    })
+
+    results_df = pd.DataFrame(results)
+
+    overall = results_df.loc[
+        results_df["family"] == "COUNT_OVERALL"
+    ].iloc[0]
+
+    print("Count-family overall MAE:", overall["MAE"])
+    print("Count-family overall WAPE (%):", overall["WAPE_percent"])
 
     print("\nPer-family results:")
-    print(results_df.to_string(index=False))
+    print(
+        results_df.loc[
+            results_df["family"] != "COUNT_OVERALL"
+        ].to_string(index=False)
+    )
 
     predictions = eligible[
         ["date", "store_nbr", "item_nbr", "prediction", "target"]
@@ -93,16 +104,16 @@ def main():
     parser.add_argument(
         "--overwrite",
         action="store_true",
-        help="Allow replacing the existing predictions file",
+        help="Allow replacing existing output files",
     )
     args = parser.parse_args()
 
     if not os.path.isfile(FEATURES):
         raise FileNotFoundError(FEATURES)
 
-    if os.path.exists(BASELINE_PREDICTIONS) and not args.overwrite:
+    if os.path.exists(BASELINE_METRICS) and not args.overwrite:
         raise FileExistsError(
-            f"{BASELINE_PREDICTIONS} already exists. "
+            f"{BASELINE_METRICS} already exists. "
             "Use --overwrite to replace it."
         )
 
@@ -128,17 +139,27 @@ def main():
         ignore_index=True,
     )
 
-    os.makedirs(
-        os.path.dirname(BASELINE_PREDICTIONS),
-        exist_ok=True
-    )
+    os.makedirs(os.path.dirname(BASELINE_METRICS), exist_ok=True)
 
-    predictions.to_parquet(
-        BASELINE_PREDICTIONS,
-        index=False
-    )
+    if os.path.exists(BASELINE_PREDICTIONS):
+        if args.overwrite:
+            predictions.to_parquet(BASELINE_PREDICTIONS, index=False)
+            print(f"\nPredictions overwritten: {BASELINE_PREDICTIONS}")
+        else:
+            existing = pd.read_parquet(BASELINE_PREDICTIONS)
+            if not existing.equals(predictions):
+                raise ValueError(
+                    "Existing predictions differ from the current run. "
+                    "Metrics were not saved."
+                )
+            print("\nExisting predictions verified; not overwritten.")
+    else:
+        predictions.to_parquet(BASELINE_PREDICTIONS, index=False)
+        print(f"\nPredictions saved to: {BASELINE_PREDICTIONS}")
 
-    print(f"\nPredictions saved to: {BASELINE_PREDICTIONS}")
+    results.to_csv(BASELINE_METRICS, index=False)
+
+    print(f"Metrics saved to: {BASELINE_METRICS}")
     print(f"Total prediction rows: {len(predictions):,}")
     print("\nEvaluation complete.")
 
