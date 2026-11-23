@@ -2,6 +2,30 @@
 
 Newest first. Each entry: done, decisions, open issues.
 
+
+## 2026-11-23
+
+**Done:** T9 baseline implementation and evaluation (Issue #31). Owner: Nour. Implemented `src/split.py`, `src/metrics.py`, and `src/baseline.py`. Ran the seven-day naive baseline on `features_v1.parquet` using the existing `lag_7` feature. Saved `baseline_predictions_v1.parquet` (374,738 rows) and `baseline_metrics_v1.csv` (31 rows) in restockai-work/outputs. Documented the methodology and results in `notes/results.md`.
+
+**Decisions:**
+- (a) Updated chronological split: fit through 2017-03-05, validation 2017-03-06 to 2017-04-30, test 2017-05-01 to 2017-07-31. No random splitting. Existing `TRAIN_END` remains unchanged.
+- (b) Exclude `fill_after_last_train` from fitting and validation scoring. Fit contains 1,521,769 eligible rows after excluding 1,269 flagged rows.
+- (c) Exclude missing `lag_7` values from scoring. Validation: 145,005 total, 2,594 unique exclusions, 142,411 scored. Test: 232,489 total, 162 exclusions, 232,327 scored.
+- (d) Compute MAE and WAPE separately on validation and test. WAPE (%) = 100 * sum(abs(target - prediction)) / sum(target).
+- (e) Report per-family metrics. POULTRY, MEATS, and PRODUCE are kg families; PREPARED FOODS and FROZEN FOODS are mixed. Overall metrics use count families only.
+- (f) Official count-family results: validation MAE 14.512524, WAPE 59.237007%; test MAE 14.452076, WAPE 59.087923%.
+- (g) Existing predictions were verified without overwriting. The baseline refuses accidental output overwrites.
+
+**Open:**
+- Add and verify the required T9 check notebook with outputs cleared.
+- Complete the PR review and merge process for Issue #31.
+- Upstream limitation: flagged future-dependent filled rows may influence later lag features; T9 does not modify T8.
+- Upstream item selection used data through 2017-04-30, beyond the updated fit cutoff. This potential selection bias remains.
+
+**For report section 3.3 Modeling / 3.5 Testing:** The naive baseline predicts each store-item day's sales using its existing seven-day lag. A chronological fit/validation/test split prevents random mixing of dates. Validation and test MAE/WAPE are calculated on eligible rows, with missing lags and flagged rows excluded according to the documented rules. Count-family WAPE is 59.2370% on validation and 59.0879% on test. Per-family results are reported separately to avoid mixing kg and count units.
+
+
+
 ## 2026-11-22
 
 **Done:** T8 features (Issue #28), `src/features.py`, run in full on Colab. Owner: Zahraa. Output: `features_v1.parquet` (1,900,532 rows = same as sales_clean_v1, 25 columns) in restockai-work/processed. Check notebook: `notebooks/03_features_check_zahraa.ipynb`: checks in sections 0-9 all PASS (assert), section 10 lists missing values per column.
