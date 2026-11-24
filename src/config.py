@@ -24,3 +24,12 @@ SALES_QUARANTINE = f"{INTERIM}/sales_quarantine_v1.parquet"
 
 # T8 additions
 FEATURES = f"{PROCESSED}/features_v1.parquet"
+
+# T9 additions: chronological fit, validation, and test periods
+FIT_END = "2017-03-05"
+VAL_START = "2017-03-06"
+VAL_END = "2017-04-30"
+TEST_START = "2017-05-01"
+TEST_END = "2017-07-31"
+BASELINE_PREDICTIONS = f"{OUTPUTS}/baseline_predictions_v1.parquet"
+BASELINE_METRICS = f"{OUTPUTS}/baseline_metrics_v1.csv"
