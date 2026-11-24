@@ -83,6 +83,49 @@ These are the official Stage B results on the current
 Full per-family metrics are stored in
 `baseline_metrics_v1.csv` in the shared outputs folder.
 
+
+### Validation — Per-Family Metrics
+
+| family | unit_type | rows | MAE | WAPE_percent |
+|---|---|---:|---:|---:|
+| BEVERAGES | count | 36693 | 17.4447 | 61.8312 |
+| BREAD/BAKERY | count | 5109 | 8.2331 | 36.8754 |
+| CLEANING | count | 5612 | 10.9077 | 68.2643 |
+| DAIRY | count | 4025 | 8.1391 | 52.8132 |
+| DELI | count | 3302 | 9.7726 | 49.1396 |
+| EGGS | count | 1792 | 24.5848 | 47.8844 |
+| FROZEN FOODS | mixed | 921 | 13.6280 | 50.4483 |
+| GROCERY I | count | 39211 | 14.4701 | 59.8505 |
+| HOME CARE | count | 2013 | 9.3532 | 67.0967 |
+| LIQUOR,WINE,BEER | count | 1342 | 10.5298 | 88.3077 |
+| MEATS | kg | 1733 | 20.0734 | 35.7436 |
+| PERSONAL CARE | count | 2463 | 8.5733 | 56.4146 |
+| POULTRY | kg | 5883 | 11.6885 | 58.0042 |
+| PREPARED FOODS | mixed | 671 | 8.0537 | 44.0891 |
+| PRODUCE | kg | 31641 | 11.9332 | 37.3120 |
+| **COUNT_OVERALL** | **count** | **101562** | **14.5125** | **59.2370** |
+
+### Test — Per-Family Metrics
+
+| family | unit_type | rows | MAE | WAPE_percent |
+|---|---|---:|---:|---:|
+| BEVERAGES | count | 57902 | 16.8598 | 60.5068 |
+| BREAD/BAKERY | count | 8514 | 8.5305 | 36.8992 |
+| CLEANING | count | 9248 | 16.4462 | 82.3925 |
+| DAIRY | count | 6543 | 7.5096 | 47.0768 |
+| DELI | count | 5440 | 10.1096 | 49.1571 |
+| EGGS | count | 2943 | 23.6884 | 44.9995 |
+| FROZEN FOODS | mixed | 1793 | 11.4740 | 50.9477 |
+| GROCERY I | count | 65388 | 14.1770 | 59.7214 |
+| HOME CARE | count | 3311 | 7.7825 | 70.5219 |
+| LIQUOR,WINE,BEER | count | 2176 | 10.8828 | 85.2970 |
+| MEATS | kg | 2850 | 19.2873 | 32.2288 |
+| PERSONAL CARE | count | 4047 | 10.0702 | 62.0541 |
+| POULTRY | kg | 9948 | 12.2753 | 57.3374 |
+| PRODUCE | kg | 52224 | 11.2951 | 34.8522 |
+| **COUNT_OVERALL** | **count** | **165512** | **14.4521** | **59.0879** |
+
+
 ## Outputs
 
 The following files are generated in the shared Drive
