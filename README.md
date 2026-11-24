@@ -18,13 +18,13 @@ ReStock AI predicts a demand range (low, expected, high) for each product and re
 6. App: a simple web app for the store manager.
 
 ## Data
-Public retail sales data from Kaggle (candidate: Corporacion Favorita), subsampled to run on free Google Colab. The data is not stored in this repo.
+Public retail sales data from Kaggle (Corporacion Favorita), subsampled to 12 stores, 250 items and 2015-08-01 to 2017-07-31 to run on free Google Colab. The data is not stored in this repo.
 
 ## Tech stack
 Python, pandas, LightGBM, PyTorch or Keras, SHAP, FastAPI, Streamlit, Google Colab.
 
 ## Status
-Work in progress. Currently in the data phase (exploration, cleaning, features, baseline). No results yet.
+Work in progress. Phase 1 (exploration, cleaning, features, time split, naive baseline) is done. Naive baseline (same day last week): count-family WAPE about 59% on validation and test, see notes/results.md. Next: LightGBM with quantile forecasts, then one simple deep learning model.
 
 ## Team
 Forecast Crew.
