@@ -126,6 +126,10 @@ Full per-family metrics are stored in
 | **COUNT_OVERALL** | **count** | **165512** | **14.4521** | **59.0879** |
 
 
+The baseline WAPE of approximately 59% is the benchmark that later models must beat. Sales are skewed and intermittent, making the same-day-last-week forecast a weak predictor.
+
+
+
 ## Outputs
 
 The following files are generated in the shared Drive
