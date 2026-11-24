@@ -22,7 +22,8 @@ The T9 check notebook, `notebooks/04_baseline_check_nour_fatima.ipynb`, was comp
 - Upstream limitation: flagged future-dependent filled rows may influence later lag features; T9 does not modify T8.
 - Upstream item selection used data through 2017-04-30, beyond the updated fit cutoff. This potential selection bias remains.
  
-**For report section 3.3 Modeling / 3.5 Testing:** The naive baseline predicts each store-item day's sales using its existing seven-day lag. A chronological fit/validation/test split prevents random mixing of dates. Validation and test MAE/WAPE are calculated on eligible rows, with missing lags and flagged rows excluded according to the documented rules. Count-family WAPE is 59.2370% on validation and 59.0879% on test. Per-family results are reported separately to avoid mixing kg and count units.
+**For report section 3.3 Modeling / 3.5 Testing:** The naive baseline predicts each store-item day's sales using its existing seven-day lag. A chronological fit/validation/test split prevents random mixing of dates. Validation and test MAE/WAPE are calculated on eligible rows, with missing lags and flagged rows excluded according to the documented rules. Count-family WAPE is 59.2370% on validation and 59.0879% on test. Per-family results are reported separately to avoid mixing kg and count units. 
+Validation (2017-03-06 to 2017-04-30) is used for tuning later models, but item selection and EDA also used data through 2017-04-30, so validation is not fully fresh. The test period remains untouched.
 
 
 
