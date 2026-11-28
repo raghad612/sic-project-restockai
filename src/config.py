@@ -33,3 +33,7 @@ TEST_START = "2017-05-01"
 TEST_END = "2017-07-31"
 BASELINE_PREDICTIONS = f"{OUTPUTS}/baseline_predictions_v1.parquet"
 BASELINE_METRICS = f"{OUTPUTS}/baseline_metrics_v1.csv"
+
+# T10 additions
+LGBM_PREDICTIONS = f"{OUTPUTS}/lgbm_predictions_v1.parquet"
+LGBM_METRICS = f"{OUTPUTS}/lgbm_metrics_v1.csv"
