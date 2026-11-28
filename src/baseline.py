@@ -7,12 +7,8 @@ import os
 import pandas as pd
 
 from src.config import FEATURES, BASELINE_PREDICTIONS, BASELINE_METRICS
-from src.metrics import mae, wape
+from src.evaluate import eligible_rows, score_period
 from src.split import split_by_date
-
-
-KG_FAMILIES = {"POULTRY", "MEATS", "PRODUCE"}
-MIXED_FAMILIES = {"PREPARED FOODS", "FROZEN FOODS"}
 
 
 def evaluate_period(data, name):
@@ -20,13 +16,7 @@ def evaluate_period(data, name):
     missing_lag = data["lag_7"].isna()
     flagged = data["fill_after_last_train"]
 
-    eligible = data.loc[~missing_lag & ~flagged].copy()
-
-    if eligible.empty:
-        raise ValueError(f"No eligible rows in {name}")
-
-    if eligible["target"].isna().any():
-        raise ValueError(f"Missing target values in {name}")
+    eligible = eligible_rows(data)
 
     eligible["prediction"] = eligible["lag_7"]
 
@@ -37,46 +27,7 @@ def evaluate_period(data, name):
     print(f"Excluded (unique rows): {len(data) - len(eligible):,}")
     print(f"Scored rows: {len(eligible):,}")
 
-    results = []
-
-    for family, group in eligible.groupby("family", observed=True):
-        family = str(family).strip().upper()
-
-        if family in KG_FAMILIES:
-            unit_type = "kg"
-        elif family in MIXED_FAMILIES:
-            unit_type = "mixed"
-        else:
-            unit_type = "count"
-
-        results.append({
-            "period": name,
-            "family": family,
-            "unit_type": unit_type,
-            "rows": len(group),
-            "MAE": mae(group["target"], group["prediction"]),
-            "WAPE_percent": wape(group["target"], group["prediction"]),
-        })
-
-    count_rows = eligible.loc[
-        ~eligible["family"].astype(str).str.strip().str.upper().isin(
-            KG_FAMILIES | MIXED_FAMILIES
-        )
-    ]
-
-    if count_rows.empty:
-        raise ValueError(f"No count-family rows in {name}")
-
-    results.append({
-        "period": name,
-        "family": "COUNT_OVERALL",
-        "unit_type": "count",
-        "rows": len(count_rows),
-        "MAE": mae(count_rows["target"], count_rows["prediction"]),
-        "WAPE_percent": wape(count_rows["target"], count_rows["prediction"]),
-    })
-
-    results_df = pd.DataFrame(results)
+    results_df = score_period(eligible, name)
 
     overall = results_df.loc[
         results_df["family"] == "COUNT_OVERALL"
