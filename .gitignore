@@ -4,10 +4,14 @@ data/*
 *.csv
 *.parquet
 *.zip
+*.7z
 
 # saved models and secrets
 *.pkl
 *.joblib
+*.h5
+*.pt
+outputs/*.txt
 .env
 kaggle.json
 
