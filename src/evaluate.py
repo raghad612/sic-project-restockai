@@ -1,4 +1,4 @@
-"""Shared evaluation for T9 and later models."""
+"""T10: shared scoring for the baseline and later models."""
 
 import pandas as pd
 
@@ -33,6 +33,7 @@ def score_period(scored, name):
 
     results = []
     for family, group in scored.groupby("family", observed=True):
+        # same spelling as the families in the metrics CSV
         family = str(family).strip().upper()
         results.append({
             "period": name,
@@ -43,6 +44,7 @@ def score_period(scored, name):
             "WAPE_percent": wape(group["target"], group["prediction"]),
         })
 
+    # kg and mixed units can't be added to counts, so the overall uses count families only
     count_rows = scored.loc[
         ~scored["family"].astype(str).str.strip().str.upper().isin(
             KG_FAMILIES | MIXED_FAMILIES
